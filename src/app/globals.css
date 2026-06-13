@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #030712;
-  --foreground: #f9fafb;
+  --background: #F8FAFC;
+  --foreground: #0F172A;
 }
 
 @theme inline {
@@ -54,12 +54,12 @@ body {
 
 @keyframes pulseGlow {
   0%, 100% {
-    opacity: 0.15;
+    opacity: 0.12;
     transform: scale(1);
   }
   50% {
-    opacity: 0.3;
-    transform: scale(1.08);
+    opacity: 0.22;
+    transform: scale(1.06);
   }
 }
 
@@ -103,42 +103,44 @@ body {
   animation: pulseGlow 10s ease-in-out infinite;
 }
 
-/* Cinematic futuristic background grid */
+/* Cinematic light-mode grid */
 .tech-grid {
   background-size: 40px 40px;
   background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    linear-gradient(to right, rgba(15, 23, 42, 0.015) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.015) 1px, transparent 1px);
   animation: gridMove 25s linear infinite;
 }
 
-/* Glowing text gradients */
+/* Glowing text helpers (subdued for light mode legibility) */
 .text-glow-emerald {
-  text-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+  text-shadow: 0 0 8px rgba(16, 185, 129, 0.2);
 }
 
 .text-glow-amber {
-  text-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+  text-shadow: 0 0 8px rgba(245, 158, 11, 0.2);
 }
 
 .text-glow-cyan {
-  text-shadow: 0 0 10px rgba(6, 182, 212, 0.4);
+  text-shadow: 0 0 8px rgba(6, 182, 212, 0.2);
 }
 
 .text-glow-purple {
-  text-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
+  text-shadow: 0 0 8px rgba(139, 92, 246, 0.2);
 }
 
-/* Glassmorphism utility */
+/* Light Glassmorphism utility */
 .glass-panel {
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.02);
 }
 
 .glass-panel-hover:hover {
-  background: rgba(15, 23, 42, 0.75);
-  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.88);
+  border-color: rgba(15, 23, 42, 0.12);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
 }
 
 /* Hologram laser scanner effect */
@@ -147,6 +149,86 @@ body {
   left: 0;
   width: 100%;
   height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(52, 211, 153, 0.4), transparent);
+  background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.25), transparent);
   animation: hologramScan 6s ease-in-out infinite;
+}
+
+/* Staggered spring/bounce cascade keyframe */
+@keyframes cascadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-cascade-up {
+  animation: cascadeUp 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  opacity: 0;
+}
+
+/* Telemetry wave line animation */
+@keyframes telemetryDash {
+  0% {
+    stroke-dashoffset: 200;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.telemetry-path {
+  stroke-dasharray: 200;
+  stroke-dashoffset: 200;
+  animation: telemetryDash 5s linear infinite;
+}
+
+/* Light-mode moving scanline effect */
+@keyframes scanlineMove {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+.scanline-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0),
+    rgba(16, 185, 129, 0.005) 40%,
+    rgba(16, 185, 129, 0.01) 50%,
+    rgba(16, 185, 129, 0.005) 60%,
+    rgba(255, 255, 255, 0)
+  );
+  pointer-events: none;
+  animation: scanlineMove 12s linear infinite;
+}
+
+/* Radar pulse animation */
+@keyframes radarPulse {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+.radar-ring {
+  position: absolute;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 50%;
+  animation: radarPulse 2s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
 }

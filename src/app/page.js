@@ -23,6 +23,110 @@ export default function App() {
   const [loadingPhase, setLoadingPhase] = useState(0);
   const [typingState, setTypingState] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
+  
+  const canvasRef = React.useRef(null);
+
+  useEffect(() => {
+    if (checkingAuth || isLoggingIn) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    let animationFrameId;
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+
+    const particles = [];
+    const particleCount = 45;
+    const connectionDistance = 110;
+
+    for (let i = 0; i < particleCount; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.6,
+        vy: (Math.random() - 0.5) * 0.6,
+        radius: Math.random() * 2 + 1,
+      });
+    }
+
+    let mouse = { x: null, y: null };
+    const handleMouseMove = (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    };
+    const handleMouseLeave = () => {
+      mouse.x = null;
+      mouse.y = null;
+    };
+    const handleResize = () => {
+      if (!canvas) return;
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseleave", handleMouseLeave);
+    window.addEventListener("resize", handleResize);
+
+    const draw = () => {
+      ctx.clearRect(0, 0, width, height);
+      
+      // Draw grid points
+      ctx.fillStyle = "rgba(16, 185, 129, 0.4)";
+      particles.forEach((p) => {
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x < 0 || p.x > width) p.vx *= -1;
+        if (p.y < 0 || p.y > height) p.vy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // Draw lines
+      ctx.strokeStyle = "rgba(16, 185, 129, 0.06)";
+      ctx.lineWidth = 1;
+      for (let i = 0; i < particles.length; i++) {
+        const p1 = particles[i];
+        for (let j = i + 1; j < particles.length; j++) {
+          const p2 = particles[j];
+          const dist = Math.hypot(p1.x - p2.x, p1.y - p2.y);
+          if (dist < connectionDistance) {
+            ctx.strokeStyle = `rgba(16, 185, 129, ${0.08 * (1 - dist / connectionDistance)})`;
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.stroke();
+          }
+        }
+
+        // Connect to mouse cursor
+        if (mouse.x !== null && mouse.y !== null) {
+          const mDist = Math.hypot(p1.x - mouse.x, p1.y - mouse.y);
+          if (mDist < 150) {
+            ctx.strokeStyle = `rgba(16, 185, 129, ${0.15 * (1 - mDist / 150)})`;
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(mouse.x, mouse.y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      animationFrameId = requestAnimationFrame(draw);
+    };
+
+    draw();
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseleave", handleMouseLeave);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [checkingAuth, isLoggingIn]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -122,20 +226,23 @@ export default function App() {
 
   if (checkingAuth) {
     return (
-      <div className="relative min-h-screen bg-[#030712] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-emerald-400 animate-spin" />
+      <div className="relative min-h-screen bg-[#F8FAFC] flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-emerald-500 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="relative min-h-screen bg-[#030712] font-sans text-slate-100 flex items-center justify-center p-4 overflow-hidden select-none">
+    <div className="relative min-h-screen bg-[#F8FAFC] font-sans text-slate-900 flex items-center justify-center p-4 overflow-hidden select-none">
       {/* Animated Cybernetic Ambient Background */}
       <div className="tech-grid absolute inset-0 z-0 opacity-20 pointer-events-none" />
       
+      {/* Interactive Particle Web Canvas */}
+      <canvas ref={canvasRef} className="absolute inset-0 z-0 pointer-events-none" />
+      
       {/* Glowing orbs */}
-      <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none animate-pulse-glow" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-violet-600/10 rounded-full blur-[120px] pointer-events-none animate-pulse-glow" style={{ animationDelay: "3s" }} />
+      <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none animate-pulse-glow" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-indigo-500/5 rounded-full blur-[120px] pointer-events-none animate-pulse-glow" style={{ animationDelay: "3s" }} />
 
       {/* Outer Ring Ambient Lines */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border border-slate-500/5 rounded-full pointer-events-none z-0" />
@@ -161,7 +268,7 @@ export default function App() {
                 Grid Synchronization
               </h2>
 
-              <div className="space-y-3 text-left bg-black/40 rounded-xl p-5 border border-slate-800 font-mono text-xs text-slate-300">
+              <div className="space-y-3 text-left bg-slate-50/80 rounded-xl p-5 border border-slate-200 font-mono text-xs text-slate-600">
                 {terminalMessages.map((msg, i) => (
                   <div
                     key={i}
@@ -170,18 +277,18 @@ export default function App() {
                     }`}
                   >
                     {i < loadingPhase ? (
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                      <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
                     ) : i === loadingPhase ? (
-                      <Loader2 className="w-4 h-4 text-emerald-400 animate-spin shrink-0 mt-0.5" />
+                      <Loader2 className="w-4 h-4 text-emerald-500 animate-spin shrink-0 mt-0.5" />
                     ) : (
-                      <div className="w-1.5 h-1.5 rounded-full bg-slate-600 mt-2 ml-1.5 shrink-0" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-slate-300 mt-2 ml-1.5 shrink-0" />
                     )}
                     <span>{msg}</span>
                   </div>
                 ))}
               </div>
 
-              <p className="text-[11px] font-mono text-slate-500 uppercase tracking-widest">
+              <p className="text-[11px] font-mono text-slate-400 uppercase tracking-widest">
                 Secure Admin Token Handshake • v3.0.2
               </p>
             </div>
@@ -197,10 +304,10 @@ export default function App() {
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.15)] mb-4 group-hover:scale-105 transition-all duration-500">
                 <Server className="w-7 h-7 text-emerald-400" />
               </div>
-              <h1 className="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+              <h1 className="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-slate-900 via-slate-700 to-slate-800 bg-clip-text text-transparent">
                 SaharSathi
               </h1>
-              <p className="text-xs font-semibold text-emerald-500/90 tracking-widest uppercase mt-1">
+              <p className="text-xs font-bold text-emerald-600 tracking-widest uppercase mt-1">
                 Metropolitan Command Portal
               </p>
             </div>
@@ -211,8 +318,8 @@ export default function App() {
                 <label htmlFor="admin-username-input" className="text-xs font-bold text-slate-400 tracking-wider uppercase ml-1">
                   Admin Account
                 </label>
-                <div className="relative flex items-center bg-slate-950/60 border border-slate-800 rounded-xl focus-within:border-emerald-500/60 focus-within:shadow-[0_0_15px_rgba(16,185,129,0.1)] transition-all duration-300">
-                  <User className="absolute left-4 w-4 h-4 text-slate-500" />
+                <div className="relative flex items-center bg-slate-50 border border-slate-200 rounded-xl focus-within:bg-white focus-within:border-emerald-500/60 focus-within:shadow-[0_0_15px_rgba(16,185,129,0.08)] transition-all duration-300">
+                  <User className="absolute left-4 w-4 h-4 text-slate-400" />
                   <input
                     id="admin-username-input"
                     type="text"
@@ -223,18 +330,18 @@ export default function App() {
                       if (error) setError("");
                     }}
                     placeholder="Enter credentials..."
-                    className="w-full bg-transparent text-sm pl-11 pr-4 py-3.5 text-slate-100 placeholder-slate-600 focus:outline-none font-medium"
+                    className="w-full bg-transparent text-sm pl-11 pr-4 py-3.5 text-slate-850 placeholder-slate-400 focus:outline-none font-medium"
                   />
                 </div>
               </div>
 
               {/* Password Input */}
               <div className="space-y-1.5">
-                <label htmlFor="admin-password-input" className="text-xs font-bold text-slate-400 tracking-wider uppercase ml-1">
+                <label htmlFor="admin-password-input" className="text-xs font-bold text-slate-500 tracking-wider uppercase ml-1">
                   Access Code
                 </label>
-                <div className="relative flex items-center bg-slate-950/60 border border-slate-800 rounded-xl focus-within:border-emerald-500/60 focus-within:shadow-[0_0_15px_rgba(16,185,129,0.1)] transition-all duration-300">
-                  <Lock className="absolute left-4 w-4 h-4 text-slate-500" />
+                <div className="relative flex items-center bg-slate-50 border border-slate-200 rounded-xl focus-within:bg-white focus-within:border-emerald-500/60 focus-within:shadow-[0_0_15px_rgba(16,185,129,0.08)] transition-all duration-300">
+                  <Lock className="absolute left-4 w-4 h-4 text-slate-400" />
                   <input
                     id="admin-password-input"
                     type="password"
@@ -245,14 +352,14 @@ export default function App() {
                       if (error) setError("");
                     }}
                     placeholder="••••••••"
-                    className="w-full bg-transparent text-sm pl-11 pr-4 py-3.5 text-slate-100 placeholder-slate-600 focus:outline-none tracking-widest font-medium"
+                    className="w-full bg-transparent text-sm pl-11 pr-4 py-3.5 text-slate-850 placeholder-slate-400 focus:outline-none tracking-widest font-medium"
                   />
                 </div>
               </div>
 
               {/* Error Message */}
               {error && (
-                <div className="text-rose-400 text-xs font-bold bg-rose-500/10 border border-rose-500/20 px-3 py-2 rounded-lg text-center animate-pulse">
+                <div className="text-rose-600 text-xs font-bold bg-rose-50 border border-rose-100 px-3 py-2 rounded-lg text-center animate-pulse">
                   {error}
                 </div>
               )}
@@ -262,7 +369,7 @@ export default function App() {
                 id="btn-login-submit"
                 type="submit"
                 disabled={typingState || !username.trim() || !password.trim()}
-                className="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl text-sm font-bold text-white hover:shadow-[0_0_20px_rgba(16,185,129,0.3)] border border-emerald-400/20 active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none mt-2 flex items-center justify-center gap-2"
+                className="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl text-sm font-bold text-white hover:shadow-[0_10px_20px_rgba(16,185,129,0.2)] border border-emerald-400/20 active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none mt-2 flex items-center justify-center gap-2 cursor-pointer"
               >
                 Unlock Admin Console
                 <ArrowRight className="w-4 h-4" />
@@ -271,11 +378,11 @@ export default function App() {
 
             {/* Cinematic Divider */}
             <div className="flex items-center gap-3 my-6">
-              <div className="h-px bg-slate-800 flex-1" />
-              <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+              <div className="h-px bg-slate-200 flex-1" />
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                 Quick Access
               </span>
-              <div className="h-px bg-slate-800 flex-1" />
+              <div className="h-px bg-slate-200 flex-1" />
             </div>
 
             {/* Demo Login Button */}
@@ -284,9 +391,9 @@ export default function App() {
               type="button"
               onClick={handleDemoLogin}
               disabled={typingState}
-              className="w-full py-3 bg-slate-950/50 hover:bg-slate-900 border border-slate-800 hover:border-slate-700/80 rounded-xl text-xs font-bold text-emerald-400/90 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 hover:shadow-[0_0_15px_rgba(16,185,129,0.08)]"
+              className="w-full py-3 bg-white hover:bg-slate-50 border border-slate-200 hover:border-slate-300 rounded-xl text-xs font-bold text-emerald-600 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 hover:shadow-[0_4px_15px_rgba(0,0,0,0.02)] cursor-pointer"
             >
-              <Sparkles className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+              <Sparkles className="w-3.5 h-3.5 text-emerald-500 animate-pulse" />
               {typingState ? "Simulating Security Entry..." : "Access with Demo Credentials"}
             </button>
 
