@@ -255,7 +255,7 @@ export default function App() {
       <div className="relative z-10 w-full max-w-[460px] animate-fade-in-up">
         {isLoggingIn ? (
           /* Futuristic Holographic Terminal Loading Sequence */
-          <div className="glass-panel rounded-3xl p-8 border-emerald-500/30 shadow-[0_0_50px_rgba(16,185,129,0.15)] flex flex-col justify-center min-h-[420px] relative overflow-hidden">
+          <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-xl flex flex-col justify-center min-h-[420px] relative overflow-hidden">
             <div className="text-center space-y-6">
               <div className="inline-flex relative">
                 <div className="w-16 h-16 rounded-full border-2 border-emerald-500/20 flex items-center justify-center animate-spin border-t-emerald-500">
@@ -295,7 +295,7 @@ export default function App() {
           </div>
         ) : (
           /* Gorgeous Cinematic Login Form */
-          <div className="glass-panel rounded-3xl p-8 shadow-2xl relative overflow-hidden group">
+          <div className="bg-white rounded-3xl p-8 border border-slate-200/80 shadow-xl relative overflow-hidden group">
             {/* Subtle top light overlay */}
             <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-slate-500/30 to-transparent" />
             

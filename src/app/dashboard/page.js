@@ -225,8 +225,8 @@ export default function Dashboard() {
       <div className="absolute bottom-[10%] left-[5%] w-[35vw] h-[35vw] bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none animate-pulse-glow" style={{ animationDelay: "3s" }} />
       <div className="absolute top-[30%] left-[20%] w-[30vw] h-[30vw] bg-cyan-500/5 rounded-full blur-[110px] pointer-events-none" />
 
-      {/* ── NAVBAR (Glassmorphism Light) ── */}
-      <nav className="sticky top-0 z-50 glass-panel border-b border-slate-200/50 animate-fade-in-down">
+      {/* ── HIGH-TECH NAVBAR (Solid Light) ── */}
+      <nav className="sticky top-0 z-50 bg-white border-b border-slate-200/80 animate-fade-in-down shadow-sm">
         <div className="max-w-[1600px] mx-auto px-4 md:px-8 flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center gap-3 cursor-pointer group">
@@ -334,7 +334,7 @@ export default function Dashboard() {
               <div
                 key={i}
                 id={`stat-card-${i}`}
-                className={`animate-fade-in-up glass-panel rounded-2xl p-5 border border-slate-200/50 shadow-sm transition-all duration-500 group relative overflow-hidden ${s.glow}`}
+                className={`animate-fade-in-up bg-white rounded-2xl p-5 border border-slate-200/60 shadow-sm transition-all duration-500 group relative overflow-hidden ${s.glow}`}
                 style={{ animationDelay: `${200 + i * 100}ms` }}
               >
                 {/* Accent glow corner */}
@@ -409,7 +409,7 @@ export default function Dashboard() {
         {/* ── PORTAL GRID ── */}
         {filtered.length === 0 ? (
           <div
-            className="animate-fade-in-up glass-panel rounded-2xl border border-dashed border-slate-300 text-center py-20 flex flex-col items-center justify-center shadow-sm"
+            className="animate-fade-in-up bg-white rounded-2xl border border-dashed border-slate-200 text-center py-20 flex flex-col items-center justify-center shadow-sm"
             style={{ animationDelay: "500ms" }}
           >
             <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mb-4 border border-slate-100">
@@ -437,7 +437,7 @@ export default function Dashboard() {
                   key={portal.id}
                   id={`portal-card-${portal.id}`}
                   onClick={() => portal.url && window.open(portal.url, "_blank")}
-                  className={`animate-cascade-up group relative glass-panel rounded-2xl p-6 shadow-sm hover:shadow-md hover:bg-white transition-all duration-500 cursor-pointer flex flex-col h-full ${portal.glow}`}
+                  className={`animate-cascade-up group relative bg-white border border-slate-200/60 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-500 cursor-pointer flex flex-col h-full ${portal.glow}`}
                   style={{ animationDelay: `${150 + idx * 75}ms` }}
                 >
                   {/* Glowing header light strip */}
