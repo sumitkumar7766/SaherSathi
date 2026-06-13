@@ -182,6 +182,11 @@ export default function App() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [loadingPhase, setLoadingPhase] = useState(0);
   const [typingState, setTypingState] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const filtered = portals.filter(
     (p) =>
@@ -486,11 +491,11 @@ export default function App() {
             </div>
 
             <div className="hidden md:block bg-slate-950/60 border border-slate-800 rounded-full px-4 py-1.5 text-xs font-bold text-slate-400 shadow-sm font-mono">
-              {new Date().toLocaleDateString("en-IN", {
+              {mounted ? new Date().toLocaleDateString("en-IN", {
                 day: "numeric",
                 month: "short",
                 year: "numeric",
-              }).toUpperCase()}
+              }).toUpperCase() : "13 JUN 2026"}
             </div>
 
             <div className="flex items-center gap-3 pl-2 sm:border-l border-slate-800">
